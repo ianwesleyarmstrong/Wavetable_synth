@@ -1,17 +1,20 @@
 #include <LiquidCrystal.h>
+#include <waveforms.h>
 LiquidCrystal LCDDriver(11,9,5,6,7,8);
 
-/******** Load AVR timer interrupt macros ********/
-#include <avr/interrupt.h>
 
-/******** Sine wave parameters ********/
-#define PI2     6.283185 // 2 * PI - saves calculating it later
-#define AMP     127      // Multiplication factor for the sine wave
-#define OFFSET  128      // Offset shifts wave to just positive values
+///******** Load AVR timer interrupt macros ********/
+//#include <avr/interrupt.h>
+//
+///******** Sine wave parameters ********/
+//#define PI2     6.283185 // 2 * PI - saves calculating it later
+//#define AMP     127      // Multiplication factor for the sine wave
+//#define OFFSET  128      // Offset shifts wave to just positive values
+//
+///******** Lookup table ********/
+//#define LENGTH  256  // The length of the waveform lookup table
+//byte wave[LENGTH];   // Storage for the waveform
 
-/******** Lookup table ********/
-#define LENGTH  256  // The length of the waveform lookup table
-byte wave[LENGTH];   // Storage for the waveform
 
 /*** Encoder ***/
 volatile unsigned int EncoderPosition;
@@ -119,7 +122,7 @@ void loop() {  // Nothing to do!
 /******** Called every time TCNT2 = OCR2A ********/
 ISR(TIMER2_COMPA_vect) {  // Called each time TCNT2 == OCR2A
   static byte index=0;    // Points to successive entries in the wavetable
-  OCR1AL = wave[index++]; // Update the PWM output
+  OCR1AL = waveformsTable[wave0][0]]; // Update the PWM output
   asm("NOP;NOP");         // Fine tuning
   TCNT2 = 6;              // Timing to compensate for time spent in ISR
 }
